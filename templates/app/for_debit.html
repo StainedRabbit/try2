@@ -1,0 +1,140 @@
+{% extends "app/base.html" %} {% load static %} {% load app_tags %} {% load humanize %} {% block head_title %}Report Sales{% endblock %} 
+{% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %} {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">For Debit</h1>
+
+  <ol class="breadcrumb float-sm-right">
+    <li class="breadcrumb-item">
+      <a href="{% url 'collection'  %}">Collection</a>
+    </li>
+    <li class="breadcrumb-item">
+      <a href="{{ collection.get_absolute_url }}"> {{ collection }} </a>
+    </li>
+
+    <li class="breadcrumb-item">For Debit</li>
+  </ol>
+</div>
+
+<div class="row">
+  <div class="col-lg-4 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <form method="get">
+          {% load crispy_forms_tags %} {{ filter.form|crispy }}
+          <input class="btn btn-sm btn-primary" type="submit" value="Go" />
+          {% if has_filter %}
+          <a
+            href="{% url 'ar-report' %}"
+            class="btn btn-sm btn-secondary float-right"
+          >
+            Reset
+          </a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+  <div class="col-lg-8">
+    <div class="card card-primary card-outline">
+      <div
+        class="card-header d-flex align-items-center justify-content-between"
+      >
+        <h6 class="m-0 font-weight-bold text-primary">Account Recievable</h6>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table
+            class="table m-0 table-striped table-valign-middle small"
+            id="dataTable"
+            width="100%"
+            cellspacing="0"
+          >
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Subtotal</th>
+                <th>Discount</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Debitted</th>
+                <th>Balance</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- positiveTweet|slice:":10" -->
+              {% for ar in ars %}
+              <tr>
+                <td>
+                  <a href="{% url 'debit-create' collection_id=collection.id sale_id=ar.id %}">{{ ar.id }}</a>
+                </td>
+
+                <td>{{ ar.customer }}</td>
+                <td>{{ ar.created }}</td>
+                <td>{{ ar.sub_total|intcomma }}</td>
+                <td>{{ ar.discount_amount|intcomma }}</td>
+                <td>{{ ar.total|intcomma }}</td>
+                <td>{{ ar.payment_amount|intcomma }}</td>
+                <td>{{ ar.debit_amount|intcomma }}</td>
+                <td>{{ ar.balance|intcomma }}</td>
+                <td>{{ ar.notes }}</td>
+                <td></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-footer clearfix">
+        <div class="pagination">
+          <span class="page-links">
+            {% if ars.has_previous %}
+
+            <a href="?{% param_replace page=ars.previous_page_number %}"
+              >Previous</a
+            >
+
+            {% endif %}
+            <span class="page-current">
+              Page <strong>{{ ars.number }}</strong> of
+              <strong>{{ ars.paginator.num_pages }} </strong>
+            </span>
+            {% if ars.has_next %}
+            <a href="?{% param_replace page=ars.next_page_number %}">Next</a>
+
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      <!-- /.card-footer -->
+    </div>
+    <!-- /.col-md-6 -->
+  </div>
+  <!-- /.row -->
+
+  {% endblock %} {% block extra_body %} {{ filter.form.media }}
+
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+  <!-- Page level custom scripts -->
+  {% comment %}
+  <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+  {% endcomment %} {% endblock %}
+</div>

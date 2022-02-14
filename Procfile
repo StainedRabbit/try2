@@ -1,0 +1,1 @@
+web: gunicorn mccoop.wsgi --log-file -

@@ -1,0 +1,54 @@
+{% extends "app/base.html" %}
+{% block head_title %}Cancel Sale{% endblock %}
+
+ {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">{{ sale }}</h1>
+
+  <ol class="breadcrumb float-sm-right">
+      {% if transaction.status == 'O' %}
+      <li class="breadcrumb-item">
+        <a href="{% url 'transaction' transaction.seller.id %}"
+          >{{ transaction }}</a
+        >
+      </li>
+      {% elif transaction.status == 'L' %}
+      <li class="breadcrumb-item">
+        <a href="{% url 'for-loadings' %}">For Loading</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'for-loading' transaction.id %}">{{ transaction }}</a>
+      </li>
+      {% endif %}
+      <li class="breadcrumb-item">
+        <a href="{{ transaction.get_absolute_url }}">Sale</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{{ sale.get_absolute_url }}">{{ sale }}</a>
+      </li>
+      <li class="breadcrumb-item">Cancel</li>
+    </ol>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <p class="card-text">
+          Are you sure you want to cancel the sale: <strong>{{ sale }}</strong>?
+        </p>
+
+        <form action="" method="POST">
+          {% csrf_token %}
+          <input class="btn btn-danger" type="submit" value="Yes, cancel." />
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+</div>
+<!-- /.row -->
+
+{% endblock %}

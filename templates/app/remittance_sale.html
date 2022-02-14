@@ -1,0 +1,168 @@
+{% extends "app/base.html" %} {% load static %} {% load app_tags %} {% load humanize %} 
+{% block head_title %}Sale{% endblock %}
+
+{% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %} {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Sale</h1>
+
+  <ol class="breadcrumb float-sm-right">
+    <li class="breadcrumb-item">
+      <a href="{{ remittance.get_absolute_url }}">{{remittance}}</a>
+    </li>
+    <li class="breadcrumb-item">Sale</li>
+  </ol>
+</div>
+
+<div class="row">
+  <div class="col-lg-4 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <form method="get">
+          {% load crispy_forms_tags %} {{ filter.form|crispy }}
+          <input class="btn btn-sm btn-primary" type="submit" value="Go" />
+          {% if has_filter %}
+          <a
+            href="{% url 'remittance-sale' remittance.id %}"
+            class="btn btn-sm btn-secondary float-right"
+          >
+            Reset
+          </a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+  <div class="col-lg-8">
+    <div class="card card-primary card-outline">
+      <div
+        class="card-header d-flex align-items-center justify-content-between"
+      >
+        <div class="btn-group">
+          <a
+            href="{% url 'sale-create' remittance.id  %}"
+            class="btn btn-info btn-sm"
+            ><i class="fas fa-plus"></i> Add Sale</a
+          >
+          <a
+            href="{% url 'remittance-sale-report' remittance.id  %}" target="_blank"
+            class="btn btn-primary btn-sm"
+          >
+            Sale Report</a
+          >
+        </div>
+        <div class="card-tools">
+          <a href="{% url 'remittance-sale-csv' remittance.id %}?{{ request.GET.urlencode }}" class="btn btn-tool btn-sm">
+            <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table
+            class="table m-0 table-striped table-valign-middle small"
+            id="dataTable"
+            width="100%"
+            cellspacing="0"
+          >
+            <thead>
+              <tr>
+                <th>Sale ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>OR Number</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Subtotal</th>
+                <th>Discount</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Debitted</th>
+                <th>Balance</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- positiveTweet|slice:":10" -->
+              {% for sale in sales %}
+              <tr>
+                <td>
+                  <a href="{{ sale.get_absolute_url }}">{{ sale.id }}</a>
+                </td>
+
+                <td>
+                  <span class="badge badge-{{ sale.type_tag }}"
+                    >{{ sale.type }}</span
+                  >
+                </td>
+                <td>
+                  <span class="badge badge-{{ sale.status_tag }}"
+                    >{{ sale.get_status_display }}</span
+                  >
+                </td>
+                <td>{{ sale.or_number|default_if_none:"" }}</td>
+                <td>{{ sale.customer }}</td>
+                <td>{{ sale.created }}</td>
+                <td>{{ sale.sub_total }}</td>
+                <td>{{ sale.discount_amount }}</td>
+                <td>{{ sale.total }}</td>
+                <td>{{ sale.payment_amount }}</td>
+                <td>{{ sale.debit_amount }}</td>
+                <td>{{ sale.balance }}</td>
+                <td>{{ sale.notes|default_if_none:"" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-footer clearfix">
+        <div class="pagination">
+          <span class="page-links">
+            {% if sales.has_previous %}
+
+            <a href="?{% param_replace page=sales.previous_page_number %}"
+              >Previous</a
+            >
+
+            {% endif %}
+            <span class="page-current">
+              Page <strong>{{ sales.number }}</strong> of
+              <strong>{{ sales.paginator.num_pages }} </strong>
+            </span>
+            {% if sales.has_next %}
+            <a href="?{% param_replace page=sales.next_page_number %}">Next</a>
+
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      <!-- /.card-footer -->
+    </div>
+    <!-- /.col-md-6 -->
+  </div>
+  <!-- /.row -->
+
+  {% endblock %} {% block extra_body %} {{ filter.form.media }}
+
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+  <!-- Page level custom scripts -->
+  {% comment %}
+  <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+  {% endcomment %} {% endblock %}
+</div>

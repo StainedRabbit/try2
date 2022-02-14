@@ -1,0 +1,147 @@
+{% extends "app/base.html" %} {% load crispy_forms_tags %} {% load static %}
+{% load app_tags %} {% block head_title %} Cut Off {% endblock %}
+{% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %} 
+{% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Cut Off</h1>
+</div>
+
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <form method="get">
+          {{ filter.form|crispy }}
+          <input class="btn btn-sm btn-primary" type="submit" value="Go" />
+          {% if has_filter %}
+          <a
+            href="{% url 'cut-off' %}"
+            class="btn btn-sm btn-secondary float-right"
+          >
+            Reset
+          </a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+  <div class="col-lg-8">
+    <div class="card card-primary card-outline">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <a
+          href="{% url 'cut-off-create' %}"
+          class="btn btn-sm btn-info float-left"
+          ><i class="fas fa-plus"></i> Add</a
+        >
+        <div class="card-tools">
+          {% comment %} <a href="{% url 'cut_off-csv' %}?{{ request.GET.urlencode }}" class="btn btn-tool btn-sm">
+            <i class="fas fa-download"></i>
+          </a> {% endcomment %}
+        </div>
+        {% comment %} <div class="card-tools">
+          <a
+            href="{% url 'cut_off-csv' %}?{{ request.GET.urlencode }}"
+            class="btn btn-tool btn-sm"
+          >
+            <i class="fas fa-download"></i>
+          </a>
+          <!-- <a href="#" class="btn btn-tool btn-sm">
+                    <i class="fas fa-bars"></i>
+                  </a> -->
+        </div> {% endcomment %}
+      </div>
+      <div class="card-body p-0">
+        <table id="example2" class="table table-striped table-valign-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Amount</th>
+              {% comment %} <th>Date Posted</th> {% endcomment %}
+              <th>Done</th>
+              {% comment %}
+              <th></th>
+              {% endcomment %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for cut_off in cut_offs %}
+            <tr>
+              <td>
+                <a href="{{ cut_off.get_absolute_url }}"
+                  >{{ cut_off.id }}</a
+                >
+              </td>
+              <td>{{ cut_off.date }}</td>
+              <td>{{ cut_off.amount }}</td>
+              {% comment %} <td>{{ cut_off.date_posted }}</td> {% endcomment %}
+              <td>{{ cut_off.is_done }}</td>
+              {% comment %}
+              <td class="text-right py-0 align-middle">
+                <div class="btn-group">
+                  <a
+                    href="{% url 'cut_off-update' cut_off.id %}"
+                    type="button"
+                    class="btn btn-warning btn-xs"
+                    ><i class="fas fa-edit" aria-hidden="true"></i
+                  ></a>
+                  <a
+                    href="{% url 'cut_off-delete' cut_off.id %}"
+                    type="button"
+                    class="btn btn-danger btn-xs"
+                    ><i class="fa fa-trash" aria-hidden="true"></i
+                  ></a>
+                </div>
+              </td>
+              {% endcomment %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer clearfix">
+        <div class="pagination">
+          <span class="page-links">
+            {% if cut_offs.has_previous %}
+
+            <a
+              href="?{% param_replace page=cut_offs.previous_page_number %}"
+              >Previous</a
+            >
+
+            {% endif %}
+            <span class="page-current">
+              Page <strong>{{ cut_offs.number }}</strong> of
+              <strong>{{ cut_offs.paginator.num_pages }}</strong>
+            </span>
+            {% if cut_offs.has_next %}
+            <a href="?{% param_replace page=cut_offs.next_page_number %}"
+              >Next</a
+            >
+
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      <!-- /.card-footer -->
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+</div>
+<!-- /.row -->
+
+{% endblock %} {% block extra_body %} {{ filter.form.media }}
+
+{% endblock %}

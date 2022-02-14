@@ -1,0 +1,151 @@
+{% extends "app/base.html" %} {% load static %} {% load app_tags %} {% load humanize %} 
+{% block head_title %}Order{% endblock %}
+
+{% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %} {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Order</h1>
+
+  
+</div>
+
+<div class="row">
+  <div class="col-lg-4 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <form method="get">
+          {% load crispy_forms_tags %} {{ filter.form|crispy }}
+          <input class="btn btn-sm btn-primary" type="submit" value="Go" />
+          {% if has_filter %}
+          <a
+            href="{% url 'order' %}"
+            class="btn btn-sm btn-secondary float-right"
+          >
+            Reset
+          </a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+  <div class="col-lg-8">
+    <div class="card card-primary card-outline">
+      <div
+        class="card-header d-flex align-items-center justify-content-between"
+      >
+        <div class="card-tools">
+          <a href="{% url 'order-csv' %}?{{ request.GET.urlencode }}" class="btn btn-tool btn-sm">
+            <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table
+            class="table m-0 table-striped table-valign-middle small"
+            id="dataTable"
+            width="100%"
+            cellspacing="0"
+          >
+            <thead>
+              <tr>
+                <th>Sale ID</th>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>OR Number</th>
+                <th>Date</th>
+                <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Subtotal</th>
+            <th>Discount Type</th>
+            <th>Discount Quantity</th>
+            <th>Discount Amount</th>
+            <th>Total</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <!-- positiveTweet|slice:":10" -->
+              {% for order in orders %}
+              <tr>
+                <td>
+                  {{ order.sale.id }}
+                </td>
+                  <td>
+                  {{ order.id }}
+                </td>
+                <td>
+                  {{ order.sale.customer }}
+                </td>
+                <td>
+                  {{ order.sale.or_number }}
+                </td>
+                <td>
+                  {{ order.sale.created }}
+                </td>
+                <td>{{ order }}</td>
+            <td>{{ order.quantity|intcomma }}</td>
+            <td>{{ order.price|intcomma }}</td>
+            <td>{{ order.sub_total|intcomma }}</td>
+            <td>{{ order.get_discount_type_display }}</td>
+            <td>{{ order.discount_quantity|intcomma }}</td>
+            <td>{{ order.discount_amount|intcomma }}</td>
+            <td>{{ order.total|intcomma }}</td>
+                <td></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-footer clearfix">
+        <div class="pagination">
+          <span class="page-links">
+            {% if orders.has_previous %}
+
+            <a href="?{% param_replace page=orders.previous_page_number %}"
+              >Previous</a
+            >
+
+            {% endif %}
+            <span class="page-current">
+              Page <strong>{{ orders.number }}</strong> of
+              <strong>{{ orders.paginator.num_pages }} </strong>
+            </span>
+            {% if orders.has_next %}
+            <a href="?{% param_replace page=orders.next_page_number %}">Next</a>
+
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      <!-- /.card-footer -->
+    </div>
+    <!-- /.col-md-6 -->
+  </div>
+  <!-- /.row -->
+
+  {% endblock %} {% block extra_body %} {{ filter.form.media }}
+
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+  <!-- Page level custom scripts -->
+  {% comment %}
+  <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+  {% endcomment %} {% endblock %}
+</div>

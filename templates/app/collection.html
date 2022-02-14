@@ -1,0 +1,145 @@
+{% extends "app/base.html" %} {% load crispy_forms_tags %} {% load static %}
+{% load app_tags %} {% block head_title %} Collection {% endblock %}
+{% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %} 
+{% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Collection</h1>
+</div>
+
+<div class="row">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-body">
+        <form method="get">
+          {{ filter.form|crispy }}
+          <input class="btn btn-sm btn-primary" type="submit" value="Go" />
+          {% if has_filter %}
+          <a
+            href="{% url 'collection' %}"
+            class="btn btn-sm btn-secondary float-right"
+          >
+            Reset
+          </a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+  <div class="col-lg-8">
+    <div class="card card-primary card-outline">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <a
+          href="{% url 'collection-create' %}"
+          class="btn btn-sm btn-info float-left"
+          ><i class="fas fa-plus"></i> Add</a
+        >
+        <div class="card-tools">
+          <a href="{% url 'collection-csv' %}?{{ request.GET.urlencode }}" class="btn btn-tool btn-sm">
+            <i class="fas fa-download"></i>
+          </a>
+        </div>
+        {% comment %} <div class="card-tools">
+          <a
+            href="{% url 'collection-csv' %}?{{ request.GET.urlencode }}"
+            class="btn btn-tool btn-sm"
+          >
+            <i class="fas fa-download"></i>
+          </a>
+          <!-- <a href="#" class="btn btn-tool btn-sm">
+                    <i class="fas fa-bars"></i>
+                  </a> -->
+        </div> {% endcomment %}
+      </div>
+      <div class="card-body p-0">
+        <table id="example2" class="table table-striped table-valign-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Done</th>
+              {% comment %}
+              <th></th>
+              {% endcomment %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for collection in collections %}
+            <tr>
+              <td>
+                <a href="{{ collection.get_absolute_url }}"
+                  >{{ collection.id }}</a
+                >
+              </td>
+              <td>{{ collection.date }}</td>
+              <td>{{ collection.amount }}</td>
+              <td>{{ collection.is_done }}</td>
+              {% comment %}
+              <td class="text-right py-0 align-middle">
+                <div class="btn-group">
+                  <a
+                    href="{% url 'collection-update' collection.id %}"
+                    type="button"
+                    class="btn btn-warning btn-xs"
+                    ><i class="fas fa-edit" aria-hidden="true"></i
+                  ></a>
+                  <a
+                    href="{% url 'collection-delete' collection.id %}"
+                    type="button"
+                    class="btn btn-danger btn-xs"
+                    ><i class="fa fa-trash" aria-hidden="true"></i
+                  ></a>
+                </div>
+              </td>
+              {% endcomment %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer clearfix">
+        <div class="pagination">
+          <span class="page-links">
+            {% if collections.has_previous %}
+
+            <a
+              href="?{% param_replace page=collections.previous_page_number %}"
+              >Previous</a
+            >
+
+            {% endif %}
+            <span class="page-current">
+              Page <strong>{{ collections.number }}</strong> of
+              <strong>{{ collections.paginator.num_pages }}</strong>
+            </span>
+            {% if collections.has_next %}
+            <a href="?{% param_replace page=collections.next_page_number %}"
+              >Next</a
+            >
+
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      <!-- /.card-footer -->
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+</div>
+<!-- /.row -->
+
+{% endblock %} {% block extra_body %} {{ filter.form.media }}
+
+{% endblock %}

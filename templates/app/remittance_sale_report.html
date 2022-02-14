@@ -1,0 +1,152 @@
+{% load static %} {% load humanize %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>MCMPC Store | Sale Report</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet" />
+    <!-- Google Font: Source Sans Pro -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        color: black;
+      }
+      table {
+        width: 100%;
+        font-size: 12px;
+      }
+      table,
+      td,
+      th {
+        border: 1px solid black;
+      }
+
+      td {
+        padding: 0px;
+      }
+
+      th {
+        text-align: center;
+      }
+
+      .width1 {
+        width: 50px;
+      }
+
+      .width2 {
+        width: 40px;
+      }
+
+      .amount {
+        width: 60px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Main content -->
+      <section class="invoice">
+        <!-- title row -->
+        <div class="row">
+          <div class="col-12">
+            <h2 class="page-header">
+              MCMPC Store
+              <small class="float-right">Sale Report </small>
+            </h2>
+          </div>
+          <!-- /.col -->
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <h3 class="h6">
+              Reference #: {{ remittance.id }} | Date: {{ remittance.date }}
+            </h3>
+          </div>
+        </div>
+        <!-- Table row -->
+        <div class="row">
+          <div class="col-12 table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Discount</th>
+                  <th>Sub Total</th>
+                  <th>Discount Amount</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sale in remittance.sales.all %} {% comment %} {% if
+                sale.good_orders %} {% endcomment %}
+                <tr>
+                  <td colspan="7">
+                    <strong>{{ sale.customer }} - ({{sale.ar_display}})</strong>
+                  </td>
+                </tr>
+
+                {% for order in sale.orders.all %}
+                <tr>
+                  <td>{{ order.product }}</td>
+                  <td class="text-right width1">
+                    {{ order.quantity|intcomma }}
+                  </td>
+                  <td class="text-right width1">{{ order.price|intcomma }}</td>
+                  <td class="text-right width2">
+                    {{ order.discount_display|default_if_none:"" }}
+                  </td>
+                  <td class="text-right amount">
+                    {{ order.sub_total|intcomma }}
+                  </td>
+
+                  <td class="text-right amount">
+                    {{ order.discount_amount|intcomma }}
+                  </td>
+
+                  <td class="text-right amount">{{ order.total }}</td>
+                </tr>
+                {% endfor %}
+
+                <tr>
+                  <td colspan="4">Total</td>
+                  <td class="text-right amount">
+                    {{ sale.sub_total|intcomma }}
+                  </td>
+                  <td class="text-right amount">
+                    {{ sale.discount_amount|intcomma }}
+                  </td>
+                  <td class="text-right amount">{{ sale.total|intcomma }}</td>
+                </tr>
+                {% comment %} {% endif %} {% endcomment %} {% endfor %}
+              </tbody>
+            </table>
+            <h6>
+              Sub Total:
+              <strong>{{ remittance.sub_total|intcomma }}</strong> | Discount:
+              <strong>{{ remittance.discount_amount|intcomma }}</strong> |
+              Total:
+              <strong>{{ remittance.total|intcomma }}</strong>
+            </h6>
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </section>
+      <!-- /.content -->
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- <script type="text/javascript">
+      window.addEventListener("load", window.print());
+    </script> -->
+  </body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "app/base.html" %} {% load static %} 
+{% block head_title %}
+Edit Remittance
+{% endblock %} {% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+{% endblock %} {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Edit</h1>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="{% url 'remittance-remit' object.pk %}">Remit</a>
+    </li>
+    <li class="breadcrumb-item">Edit</li>
+  </ol>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <form action="" method="post">
+          {% csrf_token %} {% include 'app/includes/base_form.html' with form=form %}
+
+          <input class="btn btn-primary btn-sm" type="submit" value="Submit" />
+          {% comment %} {% if not object %}
+          <a href="#" class="btn btn-secondary float-right">Add Customer</a>
+          {% endif %} {% endcomment %}
+        </form>
+      </div>
+    </div>
+    <!-- /.card -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+{% endblock %} {% block extra_body %} {{ form.media }} {% endblock %}

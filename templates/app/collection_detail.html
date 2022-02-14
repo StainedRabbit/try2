@@ -1,0 +1,161 @@
+{% extends "app/base.html" %} 
+{% load static %} {% load humanize %} 
+{% block head_title %} {{ collection }} {% endblock %} {% block extra_head %}
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %}
+{% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">{{ collection }}</h1>
+
+  <ol class="breadcrumb float-sm-right">
+    <li class="breadcrumb-item">
+      <a href="{% url 'collection'  %}">Collection</a>
+    </li>
+    <li class="breadcrumb-item">{{ collection }}</li>
+  </ol>
+</div>
+
+
+<div class="card shadow mb-4">
+  <div
+    class="card-header py-3 d-flex align-items-center justify-content-between"
+  >
+    <h6 class="m-0 font-weight-bold text-primary">
+      <i class="fas fa-info"></i> Detail
+    </h6>
+    <div class="btn-group">
+      {% if collection.is_done %}
+      <a
+        href="{% url 'collection-open' collection.id %}"
+        class="btn btn-warning btn-sm text-decoration-none"
+        ><i class="fas fa-edit" aria-hidden="true"></i> Open</a
+      >
+      {% else %}
+
+      <a
+        href="{% url 'collection-close' collection.id %}"
+        class="btn btn-info btn-sm text-decoration-none"
+        ><i class="fas fa-check-circle" aria-hidden="true"></i> Close</a
+      >
+      <a
+        href="{% url 'collection-update' collection.id %}"
+        class="btn btn-warning btn-sm text-decoration-none"
+        ><i class="fas fa-edit" aria-hidden="true"></i> Edit</a
+      >
+      <a
+        href="{% url 'collection-delete' collection.id %}"
+        class="btn btn-danger btn-sm text-decoration-none"
+        ><i class="fa fa-trash" aria-hidden="true"></i> Delete</a
+      >
+      {% endif %}
+    </div>
+  </div>
+  <div class="card-body">
+<div class="row">
+    <div class="col-sm-6">
+      <strong>ID: </strong> {{ collection.id }}<br />
+      <strong>Date: </strong> {{ collection.date }}<br />
+    </div>
+    <div class="col-sm-6">
+      <strong>Amount: </strong> {{ collection.amount }}<br />
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+  <div
+    class="card-header py-3 d-flex align-items-center justify-content-between"
+  >
+    <h6 class="m-0 font-weight-bold text-primary">Debit</h6>
+
+    {% if not collection.is_done %}
+        <a
+          href="{% url 'for-debit' collection.id %}"
+          class="btn btn-sm btn-primary float-left"
+          ><i class="fas fa-plus"></i> Add Debit</a
+        >
+        {% endif %}
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table
+        class="table table-bordered small"
+        id="dataTable"
+        width="100%"
+        cellspacing="0"
+      >
+        <thead>
+            <tr>
+              <th>Sale ID</th>
+              <th>Customer</th>
+              <th>Total</th>
+              <th>Debit</th>
+              <th>Collected</th>
+              <th>Balance</th>
+              {% if not collection.is_done %}
+              <th></th>
+              {% endif %}
+            </tr>
+          </thead>
+        <tbody>
+            {% for debit in collection.debits.all %}
+            <tr>
+              <td>{{ debit.sale.id }}</td>
+              <td>{{ debit.sale.customer }}</td>
+              <td>{{ debit.sale.total }}</td>
+
+              <td>{{ debit.amount }}</td>
+              <td>{{ debit.sale.collected_amount }}</td>
+              <td>{{ debit.sale.balance }}</td>
+
+
+              {% if not collection.is_done %}
+              <td aria-hidden="true" class="text-center py-0 align-middle">
+
+                <div class="btn-group">
+                <a
+                  href="{% url 'debit-update' debit.id %}"
+                  class="btn btn-warning btn-circle btn-sm"
+                >
+                  <i class="fas fa-edit"></i>
+                </a>
+
+                {% if not sale.is_online %}
+                <a
+                  href="{% url 'debit-delete' debit.id %}"
+                  class="btn btn-danger btn-circle btn-sm"
+                >
+                  <i class="fas fa-trash"></i>
+                </a>
+                {% endif %}
+              </div>
+
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %} {% block extra_body %}
+
+<!-- Page level plugins -->
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+<!-- Page level custom scripts -->
+<script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+
+{% endblock %}

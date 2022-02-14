@@ -1,0 +1,99 @@
+{% extends "app/base.html" %} {% load static %} {% load humanize %} 
+{% block head_title %}
+Remit
+{% endblock %}
+{% block head %}
+<link
+  href="{% static 'assets/vendor/icofont/icofont.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %} {% block content_header %}
+<div class="row mb-2">
+  <div class="col-sm-6">
+    <h1 class="m-0 text-dark">{{ remittance }}</h1>
+  </div>
+  <!-- /.col -->
+  <div class="col-sm-6">
+    <ol class="breadcrumb float-sm-right">
+      <li class="breadcrumb-item">
+        <a href="{% url 'remittances-remittance' %}">Remittance</a>
+      </li>
+      <li class="breadcrumb-item">Delivery</li>
+    </ol>
+  </div>
+  <!-- /.col -->
+</div>
+<!-- /.row -->
+{% endblock %} {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Remit</h1>
+
+  <ol class="breadcrumb float-sm-right">
+    <li class="breadcrumb-item">
+      <a href="{{ remittance.get_absolute_url }}">{{ remittance }}</a>
+    </li>
+    <li class="breadcrumb-item">Remit</li>
+  </ol>
+</div>
+
+<div class="card shadow mb-4">
+  <!-- Card Header - Dropdown -->
+  <div
+    class="
+      card-header
+      py-3
+      d-flex
+      flex-row
+      align-items-center
+      justify-content-between
+    "
+  >
+    <h6 class="m-0 font-weight-bold text-primary">
+      <i class="fas fa-info"></i> Detail:
+    </h6>
+
+    <div class="btn-group float-right">
+      {% if perms.sellers.can_manage_remittance %}
+
+      {% comment %} <a href="#" class="btn btn-info btn-sm text-decoration-none"
+        ><i class="fas fa-money-bill-alt" aria-hidden="true"></i> Check
+        Detail</a
+      > {% endcomment %}
+
+      <a href="{% url 'remittance-edit' remittance.pk %}" class="btn btn-warning btn-sm text-decoration-none"
+        ><i class="fas fa-edit" aria-hidden="true"></i> Edit</a
+      >
+      <a href="{% url 'remittance-close' remittance.pk %}" class="btn btn-danger btn-sm text-decoration-none"> Close</a>
+      {% endif %}
+    </div>
+  </div>
+  <!-- Card Body -->
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-6">
+        <strong>Remittance ID: </strong> {{ remittance.id }}<br />
+        <strong>Date: </strong> {{ remittance.date }}<br />
+        <hr />
+
+        <strong>Subtotal: </strong> {{ remittance.sub_total|intcomma }}<br />
+        <strong>Discount: </strong> {{ remittance.discount_amount|intcomma }}<br />
+        <strong>Total: </strong> {{ remittance.total|intcomma }}<br />
+
+        <strong>Balance: </strong> {{ remittance.balance|intcomma }}<br />
+        <strong>Expected Amount: </strong> {{ remittance.payment_amount|intcomma }}<br />
+      </div>
+      <div class="col-sm-6">
+        <strong>Cash: </strong> {{ remittance.cash|intcomma }}<br />
+        <strong>Coins: </strong> {{ remittance.coins|intcomma }}<br />
+        <strong>Expenses: </strong> {{ remittance.expenses|intcomma }}<br />
+        <hr />
+        <strong>Total Remittance: </strong> {{ remittance.remitted_amount|intcomma }}<br />
+        <strong>Lack/Over: </strong> {{ remittance.lack_over|intcomma }}<br />
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

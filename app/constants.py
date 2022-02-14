@@ -1,0 +1,4 @@
+SALE_STATUS_PENDING = "pending"
+SALE_STATUS_PROCESSING = "processing"
+SALE_STATUS_FOR_PICK_UP = "for_pick_up"
+SALE_STATUS_COMPLETE = "complete"

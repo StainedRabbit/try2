@@ -1,0 +1,232 @@
+{% extends "app/base.html" %} {% load static %} {% load app_tags %} {% load humanize %} 
+{% block head_title %}Report Remittances{% endblock %}
+
+{% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+
+<style>
+.products-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.products-list > .item {
+  border-radius: 0.25rem;
+  background: #fff;
+  padding: 10px 0;
+}
+.products-list > .item::after {
+  display: block;
+  clear: both;
+  content: "";
+}
+.products-list .product-img {
+  float: left;
+}
+.products-list .product-img img {
+  height: 50px;
+  width: 50px;
+}
+.products-list .product-info {
+  margin-left: 60px;
+}
+.products-list .product-title {
+  font-weight: 600;
+}
+.products-list .product-description {
+  color: #6c757d;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.product-list-in-card > .item {
+  border-radius: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+.product-list-in-card > .item:last-of-type {
+  border-bottom-width: 0;
+}
+
+</style>
+
+{% endblock %} {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <h1 class="h3 mb-0 text-gray-800">Product</h1>
+</div>
+
+<div class="row">
+  <div class="col-lg-4 mb-4">
+    <div class="card">
+      <div class="card-body">
+        <form method="get">
+          {% load crispy_forms_tags %} {{ filter.form|crispy }}
+          <input class="btn btn-sm btn-primary" type="submit" value="Go" />
+          {% if has_filter %}
+          <a
+            href="{% url 'product' %}"
+            class="btn btn-sm btn-secondary float-right"
+          >
+            Reset
+          </a>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- /.col-md-6 -->
+  <div class="col-lg-8">
+    <div class="card card-primary card-outline">
+      <div
+        class="card-header d-flex align-items-center justify-content-between"
+      >
+        
+        <div class="card-tools">
+          <a href="{% url 'product-csv' %}?{{ request.GET.urlencode }}" class="btn btn-tool btn-sm">
+            <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+        <ul class="products-list product-list-in-card pl-2 pr-2">
+          {% for product in products %}
+          <li class="item">
+            <div class="product-img">
+              <img
+                src="{% static 'img/default-150x150.png' %}"
+                alt="Product Image"
+                class="img-size-50"
+              />
+            </div>
+            <div class="product-info">
+              <a href="#" class="product-title">{{ product }}</a
+              >
+              {% if perms.products.can_modify_inventory %}
+              <a href="{% url 'product-price' product.id %}?{{ request.GET.urlencode }}">
+                <span class="badge badge-info float-right"
+                  >{{ product.price }}</span
+                ></a
+              >
+              {% else %}
+              <span class="badge badge-info float-right"
+                  >{{ product.price }}</span
+                >
+              {% endif %}
+              <div class="d-flex justify-content-between">
+                <div class="d-flex">
+                {% comment %} {% url 'good-stock-timeline' product.id %}?{{ request.GET.urlencode }} {% endcomment %}
+                  <a href="">
+                    <span class="product-description"
+                      ><strong>{{ product.inventory }}</strong>
+                      </span
+                    >
+                  </a>
+              {% if perms.products.can_modify_inventory %}
+                {% comment %}  {% endcomment %}
+    <div class="btn-group">
+
+                  <a href="{% url 'product-adjustment' product.id %}?{{ request.GET.urlencode }}" type="button" class="btn btn-warning btn-circle btn-sm ml-2"
+                    ><i class="fas fa-edit" aria-hidden="true"></i
+                  ></a>
+
+                  <a href="#" class="btn btn-info btn-circle btn-sm">
+                                        <i class="fa fa-history"></i>
+                                    </a>
+                </div>
+                                  
+              {% endif %}
+
+                </div>
+                {% comment %} <div class="d-flex">
+                  <a href="#"
+                    ><span class="product-description"
+                      >Bad Stock: <strong>{{ product.bad_inventory_display }}</strong>
+                      </span
+                    ></a
+                  >
+              {% if perms.products.can_modify_inventory %}
+                              {% url 'bad-stock-adjustment' product.id %}?{{ request.GET.urlencode }}
+                  <a href="" type="button" class="btn btn-warning btn-xs ml-2"
+                    ><i class="fas fa-edit" aria-hidden="true"></i
+                  ></a>
+              {% endif %}
+
+                </div> {% endcomment %}
+              </div>
+            </div>
+          </li>
+          <!-- /.item -->
+
+          {% endfor %} {% comment %} {% for product, data in
+          remittance.inventory.items %}
+          <li class="item">
+            <div class="product-img">
+              <img
+                src="{% static 'assets/dist/img/default-150x150.png' %}"
+                alt="Product Image"
+                class="img-size-50"
+              />
+            </div>
+            <div class="product-info">
+              <a href="#" class="product-title"
+                >{{ product }}
+                <span class="badge badge-warning float-right"
+                  >{{ data.0.amount }}</span
+                ></a
+              >
+              <span class="product-description">
+                {{ data.1 }} ({{ data.2 }})
+              </span>
+            </div>
+          </li>
+          <!-- /.item -->
+          {% endfor %} {% endcomment %}
+        </ul>
+      </div>
+
+      <div class="card-footer clearfix">
+        <div class="pagination">
+          <span class="page-links">
+            {% if products.has_previous %}
+            <a href="?{% param_replace page=products.previous_page_number %}"
+              >Previous</a
+            >
+            {% endif %}
+            <span class="page-current">
+              Page <strong>{{ products.number }}</strong> of
+              <strong>{{ products.paginator.num_pages }}</strong>
+            </span>
+            {% if products.has_next %}
+            <a href="?{% param_replace page=products.next_page_number %}"
+              >Next</a
+            >
+            {% endif %}
+          </span>
+        </div>
+      </div>
+      <!-- /.card-footer -->
+    </div>
+    <!-- /.col-md-6 -->
+  </div>
+  <!-- /.row -->
+
+  {% endblock %} {% block extra_body %} {{ filter.form.media }}
+
+  <!-- Page level plugins -->
+  <script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+  <!-- Page level custom scripts -->
+  {% comment %}
+  <script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+  {% endcomment %} {% endblock %}
+</div>

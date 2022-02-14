@@ -1,0 +1,64 @@
+{% extends "app/base.html" %} {% load static %} {% block extra_head %}
+<!-- dal bootstrap css fix -->
+<link href="{% static 'css/dal.css' %}" rel="stylesheet" />
+<!-- Custom styles for this page -->
+<link
+  href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}"
+  rel="stylesheet"
+/>
+{% endblock %} 
+{% block head_title %} 
+{% if object %} Edit {% else %} Add {% endif %} Purchase {% endblock %} {% block content %}
+
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+  {% if object %}
+  <h1 class="h3 mb-0 text-gray-800">Edit</h1>
+  {% else %}
+  <h1 class="h3 mb-0 text-gray-800">Add</h1>
+
+  {% endif %}
+
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item">
+      <a href="{% url 'procurement'  %}">Procurement</a>
+    </li>
+    {% if object %}
+
+    <li class="breadcrumb-item">
+      <a href="{{ object.procurement.get_absolute_url }}"
+        >{{ object.procurement }}</a
+      >
+    </li>
+    <li class="breadcrumb-item">{{ object}}</li>
+    <li class="breadcrumb-item">Edit</li>
+    {% else %}
+    <li class="breadcrumb-item">
+      <a href="{{ procurement.get_absolute_url }}">{{procurement }}</a>
+    </li>
+    <li class="breadcrumb-item">Purchase</li>
+    <li class="breadcrumb-item">Add</li>
+    {% endif %}
+  </ol>
+</div>
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <form action="" method="post">
+          {% csrf_token %}
+          <table>
+            {% load crispy_forms_tags %} {{ form|crispy }}
+          </table>
+          <input class="btn btn-primary" type="submit" value="Submit" />
+        </form>
+      </div>
+    </div>
+    <!-- /.card -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
+
+{% endblock %} {% block extra_body %} {{ form.media }} {% endblock %}

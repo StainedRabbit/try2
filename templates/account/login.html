@@ -1,0 +1,54 @@
+{% extends "account/base.html" %} {% load widget_tweaks %} {% load account socialaccount %} {% load i18n %} {% block head_title %}{% trans "Sign In" %}{% endblock %} {% block content %}
+
+<!-- Outer Row -->
+<div class="row justify-content-center">
+  <div class="col-xl-10 col-lg-12 col-md-9">
+    <div class="card o-hidden border-0 shadow-lg my-5">
+      <div class="card-body p-0">
+        <!-- Nested Row within Card Body -->
+        <div class="row">
+          <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+          <div class="col-lg-6">
+            <div class="p-5">
+              <div class="text-center">
+                <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+              </div>
+
+              <form
+                class="user"
+                method="POST"
+                action="{% url 'account_login' %}"
+              >
+                {% csrf_token %}
+                                        {% include 'account/includes/base_form_account.html' with form=form %} 
+
+                <button
+                  class="btn btn-primary btn-user btn-block"
+                  type="submit"
+                >
+                  {% trans "Sign In" %}
+                </button>
+
+                {% get_providers as socialaccount_providers %} {% comment %}{% if socialaccount_providers %}
+
+                <hr />
+                 {% include "socialaccount/snippets/provider_list.html" with process="login" %} {% endif %} {% endcomment %}
+              </form>
+              <hr />
+              <div class="text-center">
+                <a class="small" href="{% url 'account_reset_password' %}"
+                  >Forgot Password?</a
+                >
+              </div>
+              {% comment %} <div class="text-center">
+                <a class="small" href="{{ signup_url }}">Create an Account!</a>
+              </div> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
